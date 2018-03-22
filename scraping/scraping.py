@@ -21,7 +21,9 @@ if __name__ == '__main__':
                 for td in tr:
                     if td == "\n":
                         continue
-                    linha.append(td.text)
+                    texto = td.text
+                    texto = texto.replace("N.I.", "")
+                    linha.append(texto)
                 csv_lines.append(year + "-" + month + "-" + day +  default_time + "," + ",".join(linha))
 
     with open('funceme_media_macrorregiao.csv', 'a') as csv_funceme:
