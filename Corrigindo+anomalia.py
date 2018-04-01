@@ -54,12 +54,13 @@ def carrega_array_com_valores_do_arquivo_geral(
     conteudo_do_arquivo = conteudo_do_arquivo.replace("\n", "")
 
     # Carrega todos os dados de anomalia em um único array
-    quantidade_de_caracteres_do_valor_no_arquivo = 5
-    valores_do_arquivo = []  # Todos os valores do arquivo em um único array. Não há separação de mês. Tudo está de forma sequencial
+    qtd_char_no_arquivo = 5
+    # Todos os valores do arquivo em um único array. Não há separação de mês. Tudo está de forma sequencial
+    valores_do_arquivo = []
     for rows_index in range(QUANTIDADE_DE_VALORES_DO_ARQUIVO):
         # slice data like (n:n+5)
         value = float(conteudo_do_arquivo[
-                      rows_index * quantidade_de_caracteres_do_valor_no_arquivo: rows_index * quantidade_de_caracteres_do_valor_no_arquivo + quantidade_de_caracteres_do_valor_no_arquivo])
+                      rows_index * qtd_char_no_arquivo: rows_index * qtd_char_no_arquivo + qtd_char_no_arquivo])
         value /= 10
         valores_do_arquivo.append(value)
     return valores_do_arquivo
@@ -116,17 +117,12 @@ def merge_dados_do_diretorio(diretorio_anomalia_individual="funceme_db/anomalia/
 
 def inicia_funceme_data_frame():
     funceme_df = pd.DataFrame()
-    # In[9]:
     for anomalias_do_mes in array_de_anomalias_por_mes:
         data = np.array(anomalias_do_mes)
         row_df = pd.DataFrame(data.reshape(-1, len(data)), columns=constroi_colunas_latitude_longitude())
         funceme_df = funceme_df.append(row_df)
-    # In[10]:
-    funceme_df.index = range(0, 648, 1)
-    funceme_df.shape
+    funceme_df.index = range(0, len(array_de_anomalias_por_mes), 1)
     # ### Setando indices baseados na data
-    #
-    # In[11]:
     FORMAT = "%Y-%m"
     some_date_time1 = "1964-01"
     data_inicial = datetime.strptime(some_date_time1, FORMAT)
@@ -176,8 +172,9 @@ if __name__ == '__main__':
     for date, row in funceme_df.iterrows():
         media = (reduce(lambda x, y: x + y, row) / len(row))
         medias_mensais.append(media)
-    funceme_df.loc[:, "media_mensal"] = pd.Series(medias_mensais, index=funceme_df.index)
 
+    #Cria nova coluna chamada media_mensal e adiciona ao dataframe da funceme(funceme_df)
+    funceme_df.loc[:, "media_mensal"] = pd.Series(medias_mensais, index=funceme_df.index)
 
     # Salva médias em array de médias
     medias_anuais_janeiro = []
@@ -273,7 +270,6 @@ if __name__ == '__main__':
         anomalia.append(anomalia_do_mes)
     funceme_df.loc[:, "anomalia_mensal"] = pd.Series(anomalia, index=funceme_df.index)
 
-
     x = funceme_df.index
 
     plt.figure(figsize=(12, 6))
@@ -283,8 +279,6 @@ if __name__ == '__main__':
     plt.title("Gráfico")
     plt.show()
 
-    funceme_df.head()
-    # print("Size ", funceme_df.iloc[108]["anomalia_acumulada"])
     anomalia_acumulada = []
     # Calcula anomalia acumulada
     for index in range(len(funceme_df.index)):
@@ -292,7 +286,8 @@ if __name__ == '__main__':
         if index == 0:
             anomalia_acumulada.append(funceme_df.iloc[index]["anomalia_mensal"])
             continue
-        anomalia_acumulada.append(funceme_df.iloc[index]["anomalia_mensal"] + funceme_df.iloc[index-1]["anomalia_mensal"])
+        anomalia_acumulada.append(
+            funceme_df.iloc[index]["anomalia_mensal"] + funceme_df.iloc[index - 1]["anomalia_mensal"])
 
     funceme_df.loc[:, "anomalia_acumulada"] = pd.Series(anomalia_acumulada, index=funceme_df.index)
 
