@@ -7,7 +7,12 @@ from matplotlib import pyplot as plt
 from functools import reduce  # Operação de reduce para cálculo de média de uma lista
 from datetime import datetime
 
+# Nomes das colunas adicionadas ao dataframe
+COLUNA_ANOMALIA_ACUMULADA = "anomalia_acumulada"
+COLUNA_ANOMALIA_DO_MES = "anomalia_mensal"
+COLUNA_MEDIA_MENSAL = "media_mensal"
 # Todo mês possui 25 linhas por 38 colunas que dá 950
+
 BLOCO_DE_DADOS_DE_UM_MES = 950
 QUANTIDADE_DE_VALORES_DO_ARQUIVO = 573800  # (950 blocos x 604 meses,01/1964 até 04/2014)
 
@@ -103,8 +108,6 @@ def merge_dados_do_diretorio(diretorio_anomalia_individual="funceme_db/anomalia/
         for item in dados_mensais:
             valores_dos_arquivos.append(item)
 
-    print("Quantidade de arquivos ", quantidade_de_arquivos)
-
     ##44 meses de 05/2014 até 12/2017
     QUANTIDADE_DE_VALORES_DO_ARQUIVO += quantidade_de_arquivos * BLOCO_DE_DADOS_DE_UM_MES  # Que dá 41800
 
@@ -164,138 +167,73 @@ if __name__ == '__main__':
     array_de_anomalias_por_mes = merge_dados_do_diretorio()
     funceme_df = inicia_funceme_data_frame()
 
-    ####################################### ATIVIDADE DO GERALDO ######################################
-
     # Cria média para cada mês adicionando a coluna "media_mensal"
-    medias_mensais = []
+    media_da_figura_no_mes = []
 
     for date, row in funceme_df.iterrows():
         media = (reduce(lambda x, y: x + y, row) / len(row))
-        medias_mensais.append(media)
+        media_da_figura_no_mes.append(media)
 
-    #Cria nova coluna chamada media_mensal e adiciona ao dataframe da funceme(funceme_df)
-    funceme_df.loc[:, "media_mensal"] = pd.Series(medias_mensais, index=funceme_df.index)
+    # Cria nova coluna chamada media_mensal e adiciona ao dataframe da funceme(funceme_df)
+    funceme_df.loc[:, "%s" % COLUNA_MEDIA_MENSAL] = pd.Series(media_da_figura_no_mes, index=funceme_df.index)
 
-    # Salva médias em array de médias
-    medias_anuais_janeiro = []
-    medias_anuais_fevereiro = []
-    medias_anuais_marco = []
-    medias_anuais_abril = []
-    medias_anuais_maio = []
-    medias_anuais_junho = []
-    medias_anuais_julho = []
-    medias_anuais_agosto = []
-    medias_anuais_setembro = []
-    medias_anuais_outubro = []
-    medias_anuais_novembro = []
-    medias_anuais_dezembro = []
+    # Cria dicionário de médias anuais
+    medias_anuais = {}
+    for mes in range(1, 13, 1):
+        medias_anuais[mes] = []
 
     for date, row in funceme_df.iterrows():
-        datetime_object = datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S')
-        if datetime_object.month == 1:
-            medias_anuais_janeiro.append(row['media_mensal'])
-        if datetime_object.month == 2:
-            medias_anuais_fevereiro.append(row['media_mensal'])
-        if datetime_object.month == 3:
-            medias_anuais_marco.append(row['media_mensal'])
-        if datetime_object.month == 4:
-            medias_anuais_abril.append(row['media_mensal'])
-        if datetime_object.month == 5:
-            medias_anuais_maio.append(row['media_mensal'])
-        if datetime_object.month == 6:
-            medias_anuais_junho.append(row['media_mensal'])
-        if datetime_object.month == 7:
-            medias_anuais_julho.append(row['media_mensal'])
-        if datetime_object.month == 8:
-            medias_anuais_agosto.append(row['media_mensal'])
-        if datetime_object.month == 9:
-            medias_anuais_setembro.append(row['media_mensal'])
-        if datetime_object.month == 10:
-            medias_anuais_outubro.append(row['media_mensal'])
-        if datetime_object.month == 11:
-            medias_anuais_novembro.append(row['media_mensal'])
-        if datetime_object.month == 12:
-            medias_anuais_dezembro.append(row['media_mensal'])
+        datetime = datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S')
+        medias_anuais[datetime.month].append(row[('%s' % COLUNA_MEDIA_MENSAL)])
 
     # Calcula climatologia para cada mês
-
-    climatologia_janeiro = (reduce(lambda x, y: x + y, medias_anuais_janeiro) / len(medias_anuais_janeiro))
-    climatologia_fevereiro = (reduce(lambda x, y: x + y, medias_anuais_fevereiro) / len(medias_anuais_fevereiro))
-    climatologia_marco = (reduce(lambda x, y: x + y, medias_anuais_marco) / len(medias_anuais_marco))
-    climatologia_abril = (reduce(lambda x, y: x + y, medias_anuais_abril) / len(medias_anuais_abril))
-    climatologia_maio = (reduce(lambda x, y: x + y, medias_anuais_maio) / len(medias_anuais_maio))
-    climatologia_junho = (reduce(lambda x, y: x + y, medias_anuais_junho) / len(medias_anuais_junho))
-    climatologia_julho = (reduce(lambda x, y: x + y, medias_anuais_julho) / len(medias_anuais_julho))
-    climatologia_agosto = (reduce(lambda x, y: x + y, medias_anuais_agosto) / len(medias_anuais_agosto))
-    climatologia_setembro = (reduce(lambda x, y: x + y, medias_anuais_setembro) / len(medias_anuais_setembro))
-    climatologia_outubro = (reduce(lambda x, y: x + y, medias_anuais_outubro) / len(medias_anuais_outubro))
-    climatologia_novembro = (reduce(lambda x, y: x + y, medias_anuais_novembro) / len(medias_anuais_novembro))
-    climatologia_dezembro = (reduce(lambda x, y: x + y, medias_anuais_dezembro) / len(medias_anuais_dezembro))
-
-    print("Climatologia de cada mês")
-    print(climatologia_janeiro, climatologia_fevereiro, climatologia_marco, climatologia_abril, climatologia_maio,
-          climatologia_junho, climatologia_julho, climatologia_agosto, climatologia_setembro, climatologia_outubro,
-          climatologia_novembro, climatologia_dezembro)
+    climatologias_mensais = {}
+    for mes in range(1, 13, 1):
+        climatologias_mensais[mes] = reduce(lambda x, y: x + y, medias_anuais[mes]) / len(medias_anuais[mes])
 
     ### Calculando anomalias
-
     anomalia = []
     for date, row in funceme_df.iterrows():
-        datetime_object = datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S')
-        anomalia_do_mes = 0
-        if datetime_object.month == 1:
-            anomalia_do_mes = row["media_mensal"] - climatologia_janeiro
-        if datetime_object.month == 2:
-            anomalia_do_mes = row["media_mensal"] - climatologia_fevereiro
-        if datetime_object.month == 3:
-            anomalia_do_mes = row["media_mensal"] - climatologia_marco
-        if datetime_object.month == 4:
-            anomalia_do_mes = row["media_mensal"] - climatologia_abril
-        if datetime_object.month == 5:
-            anomalia_do_mes = row["media_mensal"] - climatologia_maio
-        if datetime_object.month == 6:
-            anomalia_do_mes = row["media_mensal"] - climatologia_junho
-        if datetime_object.month == 7:
-            anomalia_do_mes = row["media_mensal"] - climatologia_julho
-        if datetime_object.month == 8:
-            anomalia_do_mes = row["media_mensal"] - climatologia_agosto
-        if datetime_object.month == 9:
-            anomalia_do_mes = row["media_mensal"] - climatologia_setembro
-        if datetime_object.month == 10:
-            anomalia_do_mes = row["media_mensal"] - climatologia_outubro
-        if datetime_object.month == 11:
-            anomalia_do_mes = row["media_mensal"] - climatologia_novembro
-        if datetime_object.month == 12:
-            anomalia_do_mes = row["media_mensal"] - climatologia_dezembro
+        datetime = datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S')
+        anomalia_do_mes = row[COLUNA_MEDIA_MENSAL] - climatologias_mensais[datetime.month]
         anomalia.append(anomalia_do_mes)
-    funceme_df.loc[:, "anomalia_mensal"] = pd.Series(anomalia, index=funceme_df.index)
-
-    x = funceme_df.index
-
-    plt.figure(figsize=(12, 6))
-    plt.plot(x, funceme_df['anomalia_mensal'], label="anomalia")
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.74))
-    plt.xticks(rotation=45)
-    plt.title("Gráfico")
-    plt.show()
+    funceme_df.loc[:, COLUNA_ANOMALIA_DO_MES] = pd.Series(anomalia, index=funceme_df.index)
 
     anomalia_acumulada = []
     # Calcula anomalia acumulada
     for index in range(len(funceme_df.index)):
-        print(index, funceme_df.iloc[index]["anomalia_mensal"])
         if index == 0:
-            anomalia_acumulada.append(funceme_df.iloc[index]["anomalia_mensal"])
+            anomalia_acumulada.append(funceme_df.iloc[index][COLUNA_ANOMALIA_DO_MES])
             continue
         anomalia_acumulada.append(
-            funceme_df.iloc[index]["anomalia_mensal"] + funceme_df.iloc[index - 1]["anomalia_mensal"])
+            funceme_df.iloc[index][COLUNA_ANOMALIA_DO_MES] + funceme_df.iloc[index - 1][COLUNA_ANOMALIA_DO_MES])
 
-    funceme_df.loc[:, "anomalia_acumulada"] = pd.Series(anomalia_acumulada, index=funceme_df.index)
+    funceme_df.loc[:, COLUNA_ANOMALIA_ACUMULADA] = pd.Series(anomalia_acumulada, index=funceme_df.index)
 
-    print(funceme_df.head(3))
+    fig, axarr = plt.subplots(2)
+    fig.set_size_inches(7, 7)
 
-    plt.figure(figsize=(12, 6))
-    plt.plot(x, funceme_df['anomalia_acumulada'], label="anomalia acumulada")
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.74))
-    plt.xticks(rotation=45)
-    plt.title("Gráfico")
+    funceme_df['anomalia_mensal'].plot(ax=axarr[0], color='b', linestyle='-')
+    axarr[0].set_title('Anomalia mensal')
+
+    funceme_df['anomalia_acumulada'].plot(color='r', linestyle='-', ax=axarr[1])
+    axarr[1].set_title('Anomalia acumulada')
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=2.0)
+    plt.xticks(rotation=10)
     plt.show()
+
+    # x = funceme_df.index
+    # plt.figure(figsize=(12, 6))
+    # plt.plot(x, funceme_df['anomalia_mensal'], label="anomalia")
+    # plt.legend(loc='center left', bbox_to_anchor=(1, 0.74))
+    # plt.xticks(rotation=45)
+    # plt.title("Gráfico")
+    # plt.show()
+    #
+    #
+    # plt.figure(figsize=(12, 6))
+    # plt.plot(x, funceme_df['anomalia_acumulada'], label="anomalia acumulada")
+    # plt.legend(loc='center left', bbox_to_anchor=(1, 0.74))
+    # plt.xticks(rotation=45)
+    # plt.title("Gráfico")
+    # plt.show()
