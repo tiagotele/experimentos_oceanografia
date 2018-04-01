@@ -49,6 +49,7 @@ def constroi_colunas_latitude_longitude():
         for coluna in colunas:
             lat_long = linha + "-" + coluna
             colunas_do_data_frame.append(lat_long)
+    return colunas_do_data_frame
 
 
 def carrega_array_com_valores_do_arquivo_geral(
