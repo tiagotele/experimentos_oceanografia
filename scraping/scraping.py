@@ -5,7 +5,7 @@ if __name__ == '__main__':
     csv_header = "datahora,Macrorregioes,Normal(mm),Observado(mm),Desvio(%)"
     csv_lines = []
 
-    for current_year in range(2005, 2018):
+    for current_year in range(1973, 2018):
         year = str(current_year)
         day = "01"
         month = ""
