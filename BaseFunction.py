@@ -10,6 +10,17 @@ from matplotlib import pyplot as plt
 from functools import reduce  # Operação de reduce para cálculo de média de uma lista
 from datetime import datetime
 import math
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import Imputer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
+from sklearn.svm import SVC
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.naive_bayes import GaussianNB
 
 # Configurações para exibição de tableas
 pd.set_option('display.height', 1000)
@@ -443,3 +454,88 @@ def scalar_product_pws(array_dados_brutos_x, array_dados_brutos_y):
                 scalar_product_list.append(scalar_product)
         pws.append(scalar_product_list)
     return pws
+
+
+def test_knn(X, y, X_test, test_df):
+    knn = KNeighborsClassifier(n_neighbors=3)
+
+    knn.fit(X, y)
+    new_pred_class = knn.predict(X_test)
+    metrics.accuracy_score(test_df['classes'], new_pred_class)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
+
+def test_svc(X,y, X_test, test_df):
+    svc = SVC()
+    svc.fit(X, y)
+    new_pred_class = svc.predict(X_test)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
+
+def test_gpc(X,y, X_test, test_df):
+    gpc = GaussianProcessClassifier()
+    gpc.fit(X, y)
+    new_pred_class = gpc.predict(X_test)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
+
+def test_dtc(X,y, X_test, test_df):
+
+    dtc = DecisionTreeClassifier(random_state=1)
+    dtc.fit(X, y)
+    new_pred_class = dtc.predict(X_test)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
+
+def test_rfc(X,y, X_test, test_df):
+
+    rfc = RandomForestClassifier(random_state=1)
+    rfc.fit(X, y)
+    new_pred_class = rfc.predict(X_test)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
+
+def test_mlp(X,y, X_test, test_df):
+    mlp = MLPClassifier(random_state=1)
+    mlp.fit(X, y)
+    new_pred_class = mlp.predict(X_test)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
+
+def test_adc(X,y, X_test, test_df):
+    adc = AdaBoostClassifier(random_state=1)
+    adc.fit(X, y)
+    new_pred_class = adc.predict(X_test)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
+
+def test_gnb(X,y, X_test, test_df):
+    gnb = GaussianNB()
+    gnb.fit(X, y)
+    new_pred_class = gnb.predict(X_test)
+    year = 2001
+    for v in new_pred_class:
+        print(year, v)
+        year += 1
+    return new_pred_class
