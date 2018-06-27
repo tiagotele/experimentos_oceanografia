@@ -430,6 +430,7 @@ def create_transformed_df(dataframe, column_name_prefix, initial_year=1973, end_
                 dataframe_transformed_df.set_value(year, column_name, value)
     return dataframe_transformed_df
 
+
 def get_indexes_and_rows_from_second_semester(dataframe):
     indexes = []
     rows = []
@@ -440,6 +441,7 @@ def get_indexes_and_rows_from_second_semester(dataframe):
         indexes.append(index)
         rows.append(row)
     return indexes, rows
+
 
 def scalar_product_pws(array_dados_brutos_x, array_dados_brutos_y):
     pws = []
@@ -456,19 +458,20 @@ def scalar_product_pws(array_dados_brutos_x, array_dados_brutos_y):
     return pws
 
 
-def test_knn(X, y, X_test, test_df):
+def test_knn(X, y, X_test):
     knn = KNeighborsClassifier(n_neighbors=3)
 
     knn.fit(X, y)
     new_pred_class = knn.predict(X_test)
-    metrics.accuracy_score(test_df['classes'], new_pred_class)
+
     year = 2001
     for v in new_pred_class:
         print(year, v)
         year += 1
     return new_pred_class
 
-def test_svc(X,y, X_test, test_df):
+
+def test_svc(X, y, X_test):
     svc = SVC()
     svc.fit(X, y)
     new_pred_class = svc.predict(X_test)
@@ -478,7 +481,8 @@ def test_svc(X,y, X_test, test_df):
         year += 1
     return new_pred_class
 
-def test_gpc(X,y, X_test, test_df):
+
+def test_gpc(X, y, X_test):
     gpc = GaussianProcessClassifier()
     gpc.fit(X, y)
     new_pred_class = gpc.predict(X_test)
@@ -488,8 +492,8 @@ def test_gpc(X,y, X_test, test_df):
         year += 1
     return new_pred_class
 
-def test_dtc(X,y, X_test, test_df):
 
+def test_dtc(X, y, X_test):
     dtc = DecisionTreeClassifier(random_state=1)
     dtc.fit(X, y)
     new_pred_class = dtc.predict(X_test)
@@ -499,8 +503,8 @@ def test_dtc(X,y, X_test, test_df):
         year += 1
     return new_pred_class
 
-def test_rfc(X,y, X_test, test_df):
 
+def test_rfc(X, y, X_test):
     rfc = RandomForestClassifier(random_state=1)
     rfc.fit(X, y)
     new_pred_class = rfc.predict(X_test)
@@ -510,7 +514,8 @@ def test_rfc(X,y, X_test, test_df):
         year += 1
     return new_pred_class
 
-def test_mlp(X,y, X_test, test_df):
+
+def test_mlp(X, y, X_test):
     mlp = MLPClassifier(random_state=1)
     mlp.fit(X, y)
     new_pred_class = mlp.predict(X_test)
@@ -520,7 +525,8 @@ def test_mlp(X,y, X_test, test_df):
         year += 1
     return new_pred_class
 
-def test_adc(X,y, X_test, test_df):
+
+def test_adc(X, y, X_test):
     adc = AdaBoostClassifier(random_state=1)
     adc.fit(X, y)
     new_pred_class = adc.predict(X_test)
@@ -530,7 +536,8 @@ def test_adc(X,y, X_test, test_df):
         year += 1
     return new_pred_class
 
-def test_gnb(X,y, X_test, test_df):
+
+def test_gnb(X, y, X_test):
     gnb = GaussianNB()
     gnb.fit(X, y)
     new_pred_class = gnb.predict(X_test)
@@ -539,3 +546,39 @@ def test_gnb(X,y, X_test, test_df):
         print(year, v)
         year += 1
     return new_pred_class
+
+
+def load_sst_data(diretorio_arquivo_geral="funceme_db/tsm/geral/_Dados_TSMvento_2014_04_sst6414b04",
+                  diretorio_arquivos_individuais="funceme_db/anomalia_tsm/individual/"):
+    array_de_dados_sst = merge_dados_do_diretorio(diretorio_arquivo_geral, diretorio_arquivos_individuais)
+    funceme_sst_df = inicia_funceme_data_frame(array_de_dados_sst)
+    funceme_sst_df = funceme_sst_df.loc['1973-01-01':'2017-12-01']
+    funceme_sst_df = funceme_sst_df.replace(9999.8, np.nan)
+    funceme_sst_df = funceme_sst_df.dropna(axis=1, how='any')
+
+    indexes_from_second_semester, rows_from_second_semester = get_indexes_and_rows_from_second_semester(funceme_sst_df)
+
+    sst_full_area_jul_dez_df = pd.DataFrame(index=indexes_from_second_semester, columns=funceme_sst_df.columns,
+                                            data=rows_from_second_semester)
+    return sst_full_area_jul_dez_df
+
+def load_pws_data():
+    array_dados_brutos_x = merge_dados_do_diretorio(
+        "funceme_db/pseudo_tensao_x_dados_brutos/geral/_Dados_TSMvento_2014_04_pwsx6414b04",
+        "funceme_db/pseudo_tensao_x_dados_brutos/individual/")
+    array_dados_brutos_y = merge_dados_do_diretorio(
+        "funceme_db/pseudo_tensao_y_dados_brutos/geral/_Dados_TSMvento_2014_04_pwsy6414b04",
+        "funceme_db/pseudo_tensao_y_dados_brutos/individual/")
+
+    pws = scalar_product_pws(array_dados_brutos_x, array_dados_brutos_y)
+    pws_full_area_df = inicia_funceme_data_frame(pws)
+
+    indexes_from_second_semester, rows_from_second_semester = get_indexes_and_rows_from_second_semester(
+        pws_full_area_df)
+
+    pws_full_area_jul_dez_df = pd.DataFrame(index=indexes_from_second_semester, columns=pws_full_area_df.columns,
+                                            data=rows_from_second_semester)
+    pws_full_area_jul_dez_df = pws_full_area_jul_dez_df.loc['1973-01-01':'2017-12-01']
+    pws_full_area_jul_dez_df = pws_full_area_jul_dez_df.replace(14141.852781018475, np.nan)
+    pws_full_area_jul_dez_df = pws_full_area_jul_dez_df.dropna(axis=1, how='any')
+    return pws_full_area_jul_dez_df
