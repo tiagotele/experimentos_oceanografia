@@ -22,6 +22,13 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 
+from sklearn.metrics import roc_curve, auc
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
+from sklearn.multiclass import OneVsRestClassifier
+from itertools import cycle
+from scipy import interp
+
 # Configurações para exibição de tableas
 pd.set_option('display.height', 1000)
 pd.set_option('display.max_rows', 500)
@@ -582,3 +589,66 @@ def load_pws_data():
     pws_full_area_jul_dez_df = pws_full_area_jul_dez_df.replace(14141.852781018475, np.nan)
     pws_full_area_jul_dez_df = pws_full_area_jul_dez_df.dropna(axis=1, how='any')
     return pws_full_area_jul_dez_df
+
+def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm="algoritmo"):
+    # learn to predict each class against the other
+    one_vs_rest_classifier = OneVsRestClassifier(classifier)
+    y_score = one_vs_rest_classifier.fit(X_train, y_train).predict_proba(X_test)
+
+    # Compute ROC curve and ROC area for each class
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    for i in range(n_classes):
+        fpr[i], tpr[i], _ = roc_curve(y_test[:, i], y_score[:, i])
+        roc_auc[i] = auc(fpr[i], tpr[i])
+
+    # Compute micro-average ROC curve and ROC area
+    fpr["micro"], tpr["micro"], _ = roc_curve(y_test.ravel(), y_score.ravel())
+    roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+
+    lw = 2
+
+    # Compute macro-average ROC curve and ROC area
+
+    # First aggregate all false positive rates
+    all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
+
+    # Then interpolate all ROC curves at this points
+    mean_tpr = np.zeros_like(all_fpr)
+    for i in range(n_classes):
+        mean_tpr += interp(all_fpr, fpr[i], tpr[i])
+
+    # Finally average it and compute AUC
+    mean_tpr /= n_classes
+
+    fpr["macro"] = all_fpr
+    tpr["macro"] = mean_tpr
+    roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
+
+    # Plot all ROC curves
+    plt.figure()
+    # plt.plot(fpr["micro"], tpr["micro"],
+    #          label='micro-average ROC curve (area = {0:0.2f})'
+    #                ''.format(roc_auc["micro"]),
+    #          color='deeppink', linestyle=':', linewidth=4)
+    #
+    # plt.plot(fpr["macro"], tpr["macro"],
+    #          label='macro-average ROC curve (area = {0:0.2f})'
+    #                ''.format(roc_auc["macro"]),
+    #          color='navy', linestyle=':', linewidth=4)
+
+    colors = cycle(['aqua', 'darkorange', 'cornflowerblue'])
+    names=['fraco','normal','forte']
+    for i, color in zip(range(n_classes), colors):
+        plt.plot(fpr[i], tpr[i], color=color, lw=lw,
+                 label='Classe {0} (area = {1:0.2f})'.format(names[i], roc_auc[i]))
+
+    plt.plot([0, 1], [0, 1], 'k--', lw=lw)
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('Taxa de falso positivo')
+    plt.ylabel('Taxa de verdadeiro positivo')
+    plt.title('Curva ROC para o algoritmo ' + algorithm)
+    plt.legend(loc="lower right")
+    plt.show()
