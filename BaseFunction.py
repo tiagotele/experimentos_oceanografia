@@ -569,6 +569,7 @@ def load_sst_data(diretorio_arquivo_geral="funceme_db/tsm/geral/_Dados_TSMvento_
                                             data=rows_from_second_semester)
     return sst_full_area_jul_dez_df
 
+
 def load_pws_data():
     array_dados_brutos_x = merge_dados_do_diretorio(
         "funceme_db/pseudo_tensao_x_dados_brutos/geral/_Dados_TSMvento_2014_04_pwsx6414b04",
@@ -590,7 +591,8 @@ def load_pws_data():
     pws_full_area_jul_dez_df = pws_full_area_jul_dez_df.dropna(axis=1, how='any')
     return pws_full_area_jul_dez_df
 
-def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm="algoritmo"):
+
+def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm="algoritmo", area="região completa"):
     # learn to predict each class against the other
     one_vs_rest_classifier = OneVsRestClassifier(classifier)
     y_score = 0
@@ -601,7 +603,6 @@ def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm=
             y_score = one_vs_rest_classifier.fit(X_train, y_train).decision_function(X_test)
         except AttributeError:
             print("AttributeError on decision_function")
-
 
     # Compute ROC curve and ROC area for each class
     fpr = dict()
@@ -647,7 +648,7 @@ def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm=
     #          color='navy', linestyle=':', linewidth=4)
 
     colors = cycle(['aqua', 'darkorange', 'cornflowerblue'])
-    names=['fraco','normal','forte']
+    names = ['fraco', 'normal', 'forte']
     for i, color in zip(range(n_classes), colors):
         plt.plot(fpr[i], tpr[i], color=color, lw=lw,
                  label='Classe {0} (area = {1:0.2f})'.format(names[i], roc_auc[i]))
@@ -657,6 +658,6 @@ def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm=
     plt.ylim([0.0, 1.05])
     plt.xlabel('Taxa de falso positivo')
     plt.ylabel('Taxa de verdadeiro positivo')
-    plt.title('Curva ROC para o algoritmo ' + algorithm)
+    plt.title('Curva ROC para do algoritmo ' + algorithm + ' na região ' + area)
     plt.legend(loc="lower right")
     plt.show()
