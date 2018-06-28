@@ -475,7 +475,7 @@ def test_knn(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, knn
 
 
 def test_svc(X, y, X_test):
@@ -486,7 +486,7 @@ def test_svc(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, svc
 
 
 def test_gpc(X, y, X_test):
@@ -497,7 +497,7 @@ def test_gpc(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, gpc
 
 
 def test_dtc(X, y, X_test):
@@ -508,7 +508,7 @@ def test_dtc(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, dtc
 
 
 def test_rfc(X, y, X_test):
@@ -519,7 +519,7 @@ def test_rfc(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, rfc
 
 
 def test_mlp(X, y, X_test):
@@ -530,7 +530,7 @@ def test_mlp(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, mlp
 
 
 def test_adc(X, y, X_test):
@@ -541,7 +541,7 @@ def test_adc(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, adc
 
 
 def test_gnb(X, y, X_test):
@@ -552,7 +552,7 @@ def test_gnb(X, y, X_test):
     for v in new_pred_class:
         print(year, v)
         year += 1
-    return new_pred_class
+    return new_pred_class, gnb
 
 
 def load_sst_data(diretorio_arquivo_geral="funceme_db/tsm/geral/_Dados_TSMvento_2014_04_sst6414b04",
@@ -593,7 +593,15 @@ def load_pws_data():
 def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm="algoritmo"):
     # learn to predict each class against the other
     one_vs_rest_classifier = OneVsRestClassifier(classifier)
-    y_score = one_vs_rest_classifier.fit(X_train, y_train).predict_proba(X_test)
+    y_score = 0
+    try:
+        y_score = one_vs_rest_classifier.fit(X_train, y_train).predict_proba(X_test)
+    except AttributeError:
+        try:
+            y_score = one_vs_rest_classifier.fit(X_train, y_train).decision_function(X_test)
+        except AttributeError:
+            print("AttributeError on decision_function")
+
 
     # Compute ROC curve and ROC area for each class
     fpr = dict()
