@@ -661,3 +661,21 @@ def plot_roc(classifier, X_train, X_test, y_train, y_test, n_classes, algorithm=
     plt.title('Curva ROC para do algoritmo ' + algorithm + ' na região ' + area)
     plt.legend(loc="lower right")
     plt.show()
+
+#Jacques's regions
+colunas_atn_n = constroi_colunas_latitude_longitude(init_lat=19, end_lat=0, init_long=49, end_long=20)
+
+colunas_atn_s = constroi_colunas_latitude_longitude(init_lat=-1, end_lat=-17, init_long=29, end_long=0)
+
+colunas_tn = constroi_colunas_latitude_longitude(init_lat=27, end_lat=3, init_long=59, end_long=17)
+
+colunas_ts = constroi_colunas_latitude_longitude(init_lat=5, end_lat=-20, init_long=59, end_long=-17)
+
+colunas_atl3 = constroi_colunas_latitude_longitude(init_lat=3, end_lat=-3, init_long=19, end_long=0)
+
+#Coast regions
+colunas_coast_1 = constroi_colunas_latitude_longitude(init_lat=0, end_lat=-5, init_long=39, end_long=30)
+
+colunas_coast_2 = constroi_colunas_latitude_longitude(init_lat=0, end_lat=-10, init_long=49, end_long=29)
+
+colunas_coast_3 = constroi_colunas_latitude_longitude(init_lat=5, end_lat=-10, init_long=50, end_long=19)
