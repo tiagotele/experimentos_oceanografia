@@ -1,4 +1,19 @@
-Experimentos de datascience com dados do PIRATA/FUNCEME.
+# Propósito
+Notebook com experimentos utilizados no mestrado.
+
+## Notebooks utilizados
+
+| Notebook      | Descrição     |
+| ------------- | ------------- |
+| Exame dos dados de anomalia SST      | Utilizado para entender geração de anomalia, e gráfico de anomalia cumulativa para verificação de gráfico de tendência. |
+| Rainfall forecast<REGION>     | Notebook com teste de algoritmos de ML para previsão de chuva nesta região     |
+| Rainfall climatology, anomaly and cumulative | Aprendendo conceitos sobre climatologia e anomalia      |
+| Lendo dados pluviométricos da FUNCEME | Apenas estudos      |
+| Rainfall climatology, anomaly and cumulative | Apenas estudos      |
+| Lendo dados de anomalia da FUNCEME | Apenas estudos      |
+
+
+# Experimentos de datascience com dados do PIRATA/FUNCEME.
 
 Datasets foram obtidos do site da [FUNCEME](http://www.funceme.br/index.php/areas/19-monitoramento/oceanogr%C3%A1fico/403-campos-de-tsm-e-vento-no-atlantico-tropical).
 
